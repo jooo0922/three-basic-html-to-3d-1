@@ -1,0 +1,83 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+#container {
+  /* 자식요소인 labels가 이 요소를 기준으로 position offset을 줄 수 있도록 부모 태그의 포지션을 relative로 지정함. */
+  position: relative;
+  /* 브라우저 사이즈의 100%로 맞춤 */
+  width: 100%;
+  height: 100%;
+  /* labels에 추가되는 이름표 자식노드들이 런타임에서 위치가 바뀔텐데, 만약 이 요소를 벗어나면(overflow) 안보이게 하려는 것. */
+  overflow: hidden;
+}
+
+#canvas {
+  /* 부모 요소인 #container 기준으로 100% 사이즈로 맞춰주도록 함 */
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#labels {
+  /* #container를 기준올 왼쪽 위에 배치하여 캔버스 위에 겹치게 자리잡도록 함. */
+  position: absolute;
+  /* 
+  app.js에서 #labels 안의 자식노드인 이름표 요소들의 z-index값을 100000 ~ 0 사이의 값으로 할당할거기 때문에
+  얘내가 페이지의 다른 DOM 요소 위로 올라가서 가리는 일이 발생할 수 있음.
+
+  그래서 부모 컨테이너인 #labels의 z-index 값을 0으로 지정해주면, 
+  브라우저가 '새로운 쌓임 맥락(stacking context)'를 생성해서
+
+  '100000 ~ 0 사이의 z-index값은 부모 노드인 #label 안에서의 z-index로만 인정해줄 것이니(새로운 쌓임 맥락) z-index가 아무리 크더라도 다른 페이지 요소 위로 올라가면 안된다'
+  라고 정해주는 것과 같음.  
+
+  MDN에서는 해당 내용을 다음과 같이 설명하고 있음
+  '중요한 것은, 자식의 z-index 값은 부모에게만 의미가 있다는 점입니다. 
+  하나의 쌓임 맥락은 부모 쌓임 맥락 안에서 통째로 하나의 단위로 간주됩니다.'
+  */
+  z-index: 0;
+  left: 0;
+  top: 0;
+  color: white;
+}
+
+/* labels의 자식노드로 추가해 줄 div들(얘내들은 cube의 화면 상 좌표값에 따라 위치가 바뀜) */
+#labels>div {
+  /* white-space 속성은 요소의 공백 문자를 처리하는 방법을 지정하며, nowrap은 <br> 요소에 의한 것이 아닌 경우 줄바꿈을 하지 않고 한 줄에 그대로 표시하도록 함. */
+  white-space: nowrap;
+  /* 초기의 위치값은 #labels를 기준으로 왼쪽 위에 배치하여 캔버스 위에 겹치게 자리잡도록 함. */
+  position: absolute;
+  left: 0;
+  top: 0;
+  cursor: pointer;
+  font-size: large;
+  /* 사용자가 텍스트를 마우스로 선택하지 못하도록 함. */
+  user-select: none;
+  /* 
+  text-shadow: x-offset y-offset blur color 
+  
+  얘는 이제 텍스트 주변으로 얼마만큼 떨어트려서, 얼마만큼의 blur를 준 어떤 색깔의 그림자를 만들것인지 지정해 줌.
+  
+  아래에서는 blur와 color값을 통일하고 위치값만 조금씩 바꿔주고 있는데,
+  text-shadow로 '그림자'를 만들기보다 '검은 테두리'를 만들려고 하기 때문에
+  텍스트를 중심으로 8개의 방향으로 1px 만큼의 offset을 준 그림자들을 8개 만들어서
+  걔내들이 겹쳐져서 마치 1개의 검정색 테두리처럼 보이도록 하려는 것.
+  */
+  text-shadow:
+    -1px -1px 0 #000,
+    0px -1px 0 #000,
+    1px -1px 0 #000,
+    1px 0px 0 #000,
+    1px 1px 0 #000,
+    0px 1px 0 #000,
+    -1px 1px 0 #000,
+    -1px 0px 0 #000;
+}
+
+/* hover했을 때 각 텍스트 요소들의 색상값을 바꿔줌 */
+#labels>div:hover {
+  color: red;
+}
